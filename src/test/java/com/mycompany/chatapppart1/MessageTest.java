@@ -13,6 +13,10 @@ public class MessageTest {
 
     @BeforeEach
     public void setUp() {
+        // This clears the Part 3 lists before each test.
+        // It is like wiping the table before doing new homework.
+        Message.clearMessageLists();
+
         message1 = new Message(0, "+27718693002", "Hi Mike, can you join us for dinner tonight?");
         message1.setMessageID("0012345678");
 
@@ -117,5 +121,87 @@ public class MessageTest {
     public void testSentMessage_userSelectsStore_returnsCorrectString() {
         String result = message1.sentMessage(3);
         assertEquals("Message successfully stored.", result);
+    }
+
+    // === PART 3 TESTS ===
+    // These tests check the new arrays, searches, deleting and report.
+
+    @Test
+    public void testSentMessagesArray_correctlyPopulated() {
+        // Message 1 is sent.
+        Message testMessage1 = new Message(0, "+27834557896", "Did you get the cake?");
+        testMessage1.setMessageID("0000000001");
+        testMessage1.sentMessage(1);
+
+        // Message 4 is also sent.
+        Message testMessage4 = new Message(3, "0838884567", "It is dinner time!");
+        testMessage4.setMessageID("0838884567");
+        testMessage4.sentMessage(1);
+
+        assertTrue(Message.getSentMessages().contains("Did you get the cake?"));
+        assertTrue(Message.getSentMessages().contains("It is dinner time!"));
+    }
+
+    @Test
+    public void testDisplayLongestMessage_returnsCorrectMessage() {
+        // These are the stored messages from the POE test data.
+        Message.addStoredMessageForTesting("Did you get the cake?");
+        Message.addStoredMessageForTesting("Where are you? You are late! I have asked you to be on time.");
+        Message.addStoredMessageForTesting("Yohoooo, I am at your gate.");
+        Message.addStoredMessageForTesting("It is dinner time!");
+        Message.addStoredMessageForTesting("Ok, I am leaving without you.");
+
+        String result = Message.displayLongestMessage();
+        assertEquals("Where are you? You are late! I have asked you to be on time.", result);
+    }
+
+    @Test
+    public void testSearchByMessageID_returnsCorrectMessage() {
+        Message testMessage4 = new Message(3, "0838884567", "It is dinner time!");
+        testMessage4.setMessageID("0838884567");
+        testMessage4.sentMessage(1);
+
+        String result = Message.searchByMessageID("0838884567");
+        assertEquals("It is dinner time!", result);
+    }
+
+    @Test
+    public void testSearchByRecipient_returnsAllMatchingMessages() {
+        Message testMessage2 = new Message(1, "+27838884567", "Where are you? You are late! I have asked you to be on time.");
+        testMessage2.setMessageID("0000000002");
+        testMessage2.sentMessage(1);
+
+        Message testMessage5 = new Message(4, "+27838884567", "Ok, I am leaving without you.");
+        testMessage5.setMessageID("0000000005");
+        testMessage5.sentMessage(1);
+
+        String result = Message.searchByRecipient("+27838884567");
+        assertTrue(result.contains("Where are you? You are late! I have asked you to be on time."));
+        assertTrue(result.contains("Ok, I am leaving without you."));
+    }
+
+    @Test
+    public void testDeleteByHash_removesCorrectMessage() {
+        Message testMessage2 = new Message(1, "+27838884567", "Where are you? You are late! I have asked you to be on time.");
+        testMessage2.setMessageID("0000000002");
+        testMessage2.sentMessage(1);
+
+        String hash = testMessage2.getMessageHash();
+        String result = Message.deleteByHash(hash);
+
+        assertEquals("Message: Where are you? You are late! I have asked you to be on time. successfully deleted.", result);
+    }
+
+    @Test
+    public void testDisplayReport_containsRequiredFields() {
+        Message testMessage1 = new Message(0, "+27834557896", "Did you get the cake?");
+        testMessage1.setMessageID("0000000001");
+        testMessage1.sentMessage(1);
+
+        String report = Message.displayReport();
+
+        assertTrue(report.contains("Message Hash:"));
+        assertTrue(report.contains("Recipient: +27834557896"));
+        assertTrue(report.contains("Message: Did you get the cake?"));
     }
 }
