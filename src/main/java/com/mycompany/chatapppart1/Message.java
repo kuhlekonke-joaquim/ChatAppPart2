@@ -260,6 +260,7 @@ public class Message {
      * Reads messages.json and places stored messages into the storedMessages list.
      * Attribution: org.json library from https://mvnrepository.com/artifact/org.json/json
      */
+    // This method loads stored messages from the JSON file.
     public static void loadStoredMessages() {
         // We clear first so the same file does not get loaded twice by mistake.
         storedMessages.clear();
