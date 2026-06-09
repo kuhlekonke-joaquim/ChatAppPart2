@@ -174,7 +174,6 @@ public class Message {
                 // The user chose send, so we put the message into the sent basket.
                 sentMessages.add(messageText);
 
-                // These four lists move together like friends holding hands.
                 // Same index = same message.
                 trackMessageDetails();
 
@@ -340,6 +339,7 @@ public class Message {
      *
      * @return the longest message from storedMessages
      */
+    // This method finds the longest stored message.
     public static String displayLongestMessage() {
         String longest = "";
 
