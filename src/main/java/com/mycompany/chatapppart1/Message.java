@@ -375,6 +375,7 @@ public class Message {
      * @param recipient the cellphone number being searched for
      * @return all matching messages or no messages found
      */
+    // This method searches for messages using the recipient number.
     public static String searchByRecipient(String recipient) {
         StringBuilder results = new StringBuilder();
 
