@@ -3,15 +3,16 @@ package com.mycompany.chatapppart1;
 import java.util.Scanner;
 
 /**
- * Main class for ChatApp. Runs Part 1 registration/login and launches the Part 2 message menu.
+ * Main class for ChatApp. Runs Part 1 registration/login and launches the Part 2 and Part 3 message menus.
  */
 public class MainApp {
 
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
         Login login = new Login();
-//---REGISTRATION SECTION---
-// This section allows the user to register by entering a username, password and phone number.
+
+        // === REGISTRATION SECTION ===
+        // This part lets the user make an account before using the app.
         System.out.println("=== USER REGISTRATION ===");
 
         System.out.print("Enter a username: ");
@@ -30,8 +31,9 @@ public class MainApp {
             System.out.println("Registration failed. Program closing.");
             return;
         }
-//---LOGIN SECTION---
-// This section allows the user to log in using the registered username and password.
+
+        // === LOGIN SECTION ===
+        // This part checks if the user can enter the app.
         System.out.println("\n=== USER LOGIN ===");
 
         System.out.print("Enter your username: ");
@@ -46,6 +48,11 @@ public class MainApp {
 
         if (loggedIn) {
             System.out.println("Welcome to ChatApp.");
+
+            // Part 3: load stored messages before showing the menu.
+            // This is like opening the toy box before playing with the toys.
+            Message.loadStoredMessages();
+
             runMessageMenu(input);
         } else {
             System.out.println("You must be logged in to send messages.");
@@ -53,21 +60,21 @@ public class MainApp {
     }
 
     /**
-     * Runs the Part 2 menu until the user chooses to quit.
+     * Runs the message menu until the user chooses to quit.
+     *
      * @param input Scanner used to read user input
      */
-    //---PART 2 MENU SECTION---
-// This section displays the message menu after the user has successfully logged in.
     private static void runMessageMenu(Scanner input) {
         boolean running = true;
-//---PART 2 MESSAGE MENU---
-// This menu allows the user to send messages, view the coming soon feature,
-// or quit the application.
+
+        // === MAIN CHAT MENU ===
+        // This menu is the main control room of the app.
         while (running) {
             System.out.println("\n========= CHAT MENU =========");
             System.out.println("1) Send Messages");
             System.out.println("2) Show recently sent messages");
             System.out.println("3) Quit");
+            System.out.println("4) Stored Messages");
             System.out.print("Choose option: ");
 
             int choice = input.nextInt();
@@ -84,23 +91,26 @@ public class MainApp {
                     running = false;
                     System.out.println("Goodbye.");
                     break;
+                case 4:
+                    storedMessagesMenu(input);
+                    break;
                 default:
-                    System.out.println("Invalid option. Please choose 1, 2, or 3.");
+                    System.out.println("Invalid option. Please choose 1, 2, 3, or 4.");
             }
         }
     }
 
     /**
-      Uses a for loop to allow the user to enter multiple messages.
+     * Uses a for loop to allow the user to enter multiple messages.
+     *
      * @param input Scanner used to read user input
      */
-    //---SEND MESSAGE SECTION---
-// This section asks the user how many messages they want to send.
     private static void sendMessages(Scanner input) {
         System.out.println("How many messages would you like to send?");
         int numMessages = input.nextInt();
         input.nextLine();
-// This for loop runs according to the number of messages entered by the user.
+
+        // This loop repeats for the amount of messages the user asked for.
         for (int i = 0; i < numMessages; i++) {
             int messageNumber = i;
             System.out.println("\n--- Message " + (i + 1) + " ---");
@@ -110,7 +120,8 @@ public class MainApp {
 
             System.out.print("Enter your message: ");
             String messageText = input.nextLine();
-// Create the message object using the message number, recipient and message text
+
+            // Create one message object with its number, recipient and text.
             Message message = new Message(messageNumber, recipient, messageText);
 
             System.out.println(message.checkRecipientCell());
@@ -125,5 +136,69 @@ public class MainApp {
         }
 
         System.out.println("Total messages entered: " + numMessages);
+    }
+
+    /**
+     * Runs the Part 3 stored messages sub-menu.
+     *
+     * @param input Scanner used to read user input
+     */
+    private static void storedMessagesMenu(Scanner input) {
+        boolean inStoredMenu = true;
+
+        // === STORED MESSAGES MENU ===
+        // This is the small menu inside option 4.
+        // It lets the user search, delete and view reports.
+        while (inStoredMenu) {
+            System.out.println("\n========= STORED MESSAGES MENU =========");
+            System.out.println("a) Display all stored messages");
+            System.out.println("b) Display longest message");
+            System.out.println("c) Search by message ID");
+            System.out.println("d) Search by recipient");
+            System.out.println("e) Delete by message hash");
+            System.out.println("f) Display full report");
+            System.out.println("g) Back to main menu");
+            System.out.print("Choose option: ");
+
+            String choice = input.nextLine().toLowerCase();
+
+            switch (choice) {
+                case "a":
+                    // Show the stored messages loaded from messages.json.
+                    System.out.println(Message.displayStoredMessages());
+                    break;
+                case "b":
+                    // Find the biggest/longest stored message.
+                    System.out.println("Longest message: " + Message.displayLongestMessage());
+                    break;
+                case "c":
+                    // Search by the message ID number.
+                    System.out.print("Enter message ID: ");
+                    String id = input.nextLine();
+                    System.out.println(Message.searchByMessageID(id));
+                    break;
+                case "d":
+                    // Search by the recipient phone number.
+                    System.out.print("Enter recipient number: ");
+                    String recipient = input.nextLine();
+                    System.out.println(Message.searchByRecipient(recipient));
+                    break;
+                case "e":
+                    // Delete one message using its hash.
+                    System.out.print("Enter message hash: ");
+                    String hash = input.nextLine();
+                    System.out.println(Message.deleteByHash(hash));
+                    break;
+                case "f":
+                    // Print the full sent message report.
+                    System.out.println(Message.displayReport());
+                    break;
+                case "g":
+                    inStoredMenu = false;
+                    break;
+                default:
+                    System.out.println("Invalid option. Please choose a, b, c, d, e, f, or g.");
+            }
+        }
     }
 }
